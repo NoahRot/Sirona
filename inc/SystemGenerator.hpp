@@ -54,6 +54,17 @@ void generate_system(uint32_t seed, const TagList& galaxy_tag) {
     int nbr_planets = lehmer32.poisson(expected_planets);
 
     std::cout << stellar.info_str() << "\n" << "number of planets: " << nbr_planets << std::endl;
-
-    
 }
+
+struct StellarSystem {
+    uint32_t seed;
+
+    StellarObject stellar_object;
+};
+
+class SystemGenerator {
+public:
+
+private:
+
+};
