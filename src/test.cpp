@@ -1,11 +1,15 @@
 #include <iostream>
 
 #include "Logger/Logger.hpp"
+#include "Window/Window.hpp"
+#include "Event/Event.hpp"
+#include "Time/Timer.hpp"
 
 #include "Planet.hpp"
 #include "Stellar.hpp"
 #include "Tag.hpp"
 #include "SystemGenerator.hpp"
+#include "Moon.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -14,12 +18,32 @@ int main(int argc, char* argv[])
     AMB::Logger::init(log_state, "sirona.log");
     AMB::Logger& logger = AMB::Logger::instance();
 
+    AMB::Window window(1000, 800, "Stellar Test", SDL_INIT_EVERYTHING, SDL_WINDOW_OPENGL);
+    AMB::EventManager event_manager(&window);
+    AMB::Timer timer(60);
+
     std::random_device rd;
     AMB::Lehmer32 lehmer(rd());
 
     logger.log(AMB::Info, "=== PROGRAM STARTED ===");
 
-    generate_system(lehmer.next_uint32(), {});
+    SystemGenerator system_generator("res/data/SystemGeneratorParam.csv");
+
+    while(!event_manager.is_quitting()) {
+        event_manager.manage();
+
+        if (event_manager.keyboard().key_down(AMB::KeyCode::KEY_CODE_ESCAPE)) {
+            event_manager.quit();
+        }
+
+        if (event_manager.keyboard().key_down(AMB::KEY_CODE_SPACE)) {
+            StellarSystem system = system_generator.generate(lehmer.next_uint32());
+            logger.log(AMB::Info, system.info_str());
+            
+        }
+
+        timer.wait();
+    }
 
     logger.log(AMB::Info, "=== PROGRAM FINISHED ===");    
 

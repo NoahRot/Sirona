@@ -1,0 +1,2 @@
+min_slot,max_slot,empty_weight,planet_weight,asteroid_belt_weight,asteroid_max_coeff,lambda_max,lambda_steepness_min,lambda_steepness_max,lambda_0,orbit_init,orbital_switch_mode,orbital_mult_min,orbital_mult_max
+3,30,25,60,15,0.35,25,0.02,0.06,4,0.25f,20,1.4,2

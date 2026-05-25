@@ -10,6 +10,7 @@
 #include <inttypes.h>
 
 #include "WeightedEntry.hpp"
+#include "Moon.hpp"
 
 #include "Logger/Logger.hpp"
 
@@ -115,26 +116,35 @@ struct PlanetObject {
     PlanetCategory category;
     PlanetSubtype subtype;
 
+    uint32_t seed;
+
     float mass;
     float radius;
     float temperature;
+    float orbital_radius;
+
+    std::vector<MoonObject> moons;
 
     std::vector<std::string> modifiers; // TODO Need to add the modifiers (load csv and generate them)
 
-    std::string info_str() const {
+    std::string info_str(uint32_t nbr_white_space = 0) const {
         std::ostringstream oss;
+        std::string white_space = "";
+        for (uint32_t i(0) ; i < nbr_white_space ; ++i) {
+            white_space += " ";
+        }
 
-        oss << "===== Planet Object =====\n";
-        oss << "Name: " << name << '\n';
-        oss << "Category: "
+        oss << white_space << "===== Planet Object =====\n";
+        oss << white_space << "Name: " << name << '\n';
+        oss << white_space << "Category: "
             << planet_category_to_string(category) << '\n';
-        oss << "Subtype: "
+        oss << white_space << "Subtype: "
             << subtype << '\n';
-        oss << "Mass: "
+        oss << white_space << "Mass: "
             << mass << " earth masses\n";
-        oss << "Radius: "
+        oss << white_space << "Radius: "
             << radius << " km\n";
-        oss << "Temperature: "
+        oss << white_space << "Temperature: "
             << temperature << " K\n";
 
         return oss.str();
@@ -331,7 +341,13 @@ private:
             std::getline(ss, category_str, ',');
             category_str.erase(0, category_str.find_first_not_of(" \t"));
             category_str.erase(category_str.find_last_not_of(" \t") + 1);
-            PlanetCategory category = string_to_planet_category(category_str);
+            PlanetCategory category;
+            try{
+                category = string_to_planet_category(category_str);
+            }catch(...){
+                m_logger.log(AMB::Fatal, "PlanetFactory: Unknown category during load subtype: " + category_str);
+                exit(EXIT_FAILURE);
+            }
             data.category = category;
 
             // Get weight

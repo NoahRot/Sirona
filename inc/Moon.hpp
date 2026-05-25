@@ -26,7 +26,7 @@ enum class MoonCategory {
 };
 
 MoonCategory string_to_moon_category(const std::string& str) {
-    if (str == "Telluric")      return MoonCategory::Rock;
+    if (str == "Rock")          return MoonCategory::Rock;
     if (str == "Ice")           return MoonCategory::Ice;
     if (str == "Volcanic")      return MoonCategory::Volcanic;
     if (str == "Oceanic")       return MoonCategory::Oceanic;
@@ -66,26 +66,34 @@ struct MoonObject {
     MoonCategory category;
     MoonSubtype subtype;
 
+    uint32_t seed;
+
     float mass;
     float radius;
     float temperature;
+    float orbital_radius;
 
     std::vector<std::string> modifiers; // TODO Need to add the modifiers (load csv and generate them)
 
-    std::string info_str() const {
+    std::string info_str(uint32_t nbr_white_space = 0) const {
         std::ostringstream oss;
 
-        oss << "===== Moon Object =====\n";
-        oss << "Name: " << name << '\n';
-        oss << "Category: "
+        std::string white_space = "";
+        for (uint32_t i(0) ; i < nbr_white_space ; ++i) {
+            white_space += " ";
+        }
+
+        oss << white_space << "===== Moon Object =====\n";
+        oss << white_space << "Name: " << name << '\n';
+        oss << white_space << "Category: "
             << moon_category_to_string(category) << '\n';
-        oss << "Subtype: "
+        oss << white_space << "Subtype: "
             << subtype << '\n';
-        oss << "Mass: "
+        oss << white_space << "Mass: "
             << mass << " earth masses\n";
-        oss << "Radius: "
+        oss << white_space << "Radius: "
             << radius << " km\n";
-        oss << "Temperature: "
+        oss << white_space << "Temperature: "
             << temperature << " K\n";
 
         return oss.str();
@@ -101,7 +109,7 @@ public:
         load_subtype();
     }
 
-    MoonObject generate_planet_object(AMB::Lehmer32& lehmer) {
+    MoonObject generate_moon_object(AMB::Lehmer32& lehmer) {
         MoonObject object;
 
         // =====================================================
@@ -282,7 +290,13 @@ private:
             std::getline(ss, category_str, ',');
             category_str.erase(0, category_str.find_first_not_of(" \t"));
             category_str.erase(category_str.find_last_not_of(" \t") + 1);
-            MoonCategory category = string_to_moon_category(category_str);
+            MoonCategory category;
+            try{
+                category = string_to_moon_category(category_str);
+            }catch(...){
+                m_logger.log(AMB::Fatal, "MoonFactory: Unknown category during load subtype: " + category_str);
+                exit(EXIT_FAILURE);
+            }
             data.category = category;
 
             // Get weight
