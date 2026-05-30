@@ -141,6 +141,9 @@ std::string StellarObject::info_str() const {
         << radius << " km\n";
     oss << "Temperature: "
         << temperature << " K\n";
+    oss << "Luminosity: "
+        << luminosity << " \n";
+
 
     return oss.str();
 }
@@ -197,6 +200,12 @@ StellarObject StellarObjectFactory::generate_stellar_object(AMB::Lehmer32& lehme
     object.radius = lehmer.uniform_float(data.min_radius, data.max_radius);
     object.temperature = lehmer.uniform_float(data.min_temperature, data.max_temperature);
 
+    // =====================================================
+    // PHYSICAL COMPUTATION
+    // =====================================================
+
+    object.luminosity = powf(object.radius, 2) * powf(object.temperature, 4) * global::STEFAN_BOLTZMAN_CST;
+
     return object;
 }
 
@@ -206,7 +215,6 @@ std::string StellarObjectFactory::info_category_str() const {
     for (const auto& cat : m_category_entries) {
         StellarCategory category = cat.value;
         float probability = cat.weight;
-
         oss << "Category: " << std::setw(16) << stellar_category_to_string(category) << ", probability: " << std::setw(4) << probability << "\n";
     }
 

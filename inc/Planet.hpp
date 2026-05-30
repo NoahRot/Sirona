@@ -326,7 +326,7 @@ private:
             }
 
             std::string subtype_str, category_str, weight_str, element_str;
-            float weight;
+            float weight(0.0f);
             bool error_subtype(false);
             PlanetSubtypeData data;
 

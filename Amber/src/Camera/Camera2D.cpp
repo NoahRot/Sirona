@@ -3,7 +3,7 @@
 namespace AMB {
 
 CameraOrthographic::CameraOrthographic(mat::Vec2f position, mat::Vec2f dimension, float orientation, mat::Vec2f depth)
-: m_position(position), m_dimension(dimension), m_depth(depth), m_orientation(orientation), m_recompute(true)
+: m_position(position), m_dimension(dimension), m_depth(depth), m_orientation(orientation), m_zoom(1.0f), m_recompute(true)
 {
     compute_matrices();
 }
@@ -63,9 +63,30 @@ void CameraOrthographic::set_depth(float near, float far) {
     m_recompute = true;
 }
 
+void CameraOrthographic::set_zoom(float zoom) {
+    // Prevent going to zero or negative
+    m_zoom = std::max(0.01f, zoom);  
+    m_recompute = true;
+}
+
+void CameraOrthographic::zoom(float factor) {
+    if (factor > 0.0f) {
+        m_zoom *= factor;
+        m_recompute = true;
+    }
+}
+
+float CameraOrthographic::get_zoom() const {
+    return m_zoom;
+}
+
 void CameraOrthographic::compute_matrices() {
     if (!m_recompute) { return; }
-    m_projection = mat::graph::orthographic3<float>(-0.5f * m_dimension[0], 0.5f * m_dimension[0], -0.5f * m_dimension[1], 0.5f * m_dimension[1], m_depth[0], m_depth[1]);
+
+    float effective_width = m_dimension[0] / m_zoom;
+    float effective_height = m_dimension[1] / m_zoom;
+
+    m_projection = mat::graph::orthographic3<float>(-0.5f * effective_width, 0.5f * effective_width, -0.5f * effective_height, 0.5f * effective_height, m_depth[0], m_depth[1]);
     m_view = mat::dot(mat::graph::rotateZ<float>(-m_orientation), mat::graph::translate3<float>(mat::Vec3f{-m_position[0], -m_position[1], 0.0f}));
     m_recompute = false;
 }

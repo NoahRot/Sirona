@@ -29,6 +29,7 @@ public:
 
         // Generate star
         StellarObject stellar = m_stellar_factory.generate_stellar_object(lehmer32);
+        system.stellar_object = stellar;
 
         // Disk
         SystemDisk disk = generate_disk(lehmer32);

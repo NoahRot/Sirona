@@ -30,6 +30,12 @@ public:
 
     void set_depth(float near, float far);
 
+    void set_zoom(float zoom);
+
+    void zoom(float factor);
+
+    float get_zoom() const;
+
 private:
     void compute_matrices();
 
@@ -40,6 +46,7 @@ private:
     mat::Vec2f m_dimension;
     mat::Vec2f m_depth;
     float m_orientation;
+    float m_zoom;
 
     bool m_recompute;
 };

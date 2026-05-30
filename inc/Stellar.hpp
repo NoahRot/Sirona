@@ -13,6 +13,7 @@
 #include "Random/Lehmer.hpp"
 
 #include "WeightedEntry.hpp"
+#include "Global.hpp"
 
 /// @brief Stellar category of objects
 enum class StellarCategory {
@@ -124,6 +125,7 @@ struct StellarObject
     float mass;
     float radius;
     float temperature;
+    float luminosity;
 
     /// @brief Return the informations of the stellar object in a string
     /// @return The string containing the informations of the stellar object
@@ -146,6 +148,9 @@ struct StellarSubtypeData
 
     float min_temperature;
     float max_temperature;
+
+    float min_luminosity;
+    float max_luminosity;
 };
 
 /// @brief Factory to create stellar objects
